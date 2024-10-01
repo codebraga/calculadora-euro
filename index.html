@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversão de Valores e Salário</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        button {
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        h3 {
+            margin-top: 20px;
+            color: #2c3e50;
+        }
+        #melhorOpcao, #diferencaValor {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Conversão de Valores e Salário</h1>
+        
+        <h2>Simulação de Salário</h2>
+        <input type="number" id="meses" placeholder="Quantidade de Meses" />
+        <input type="number" id="pessoas" placeholder="Quantidade de Pessoas" />
+        <input type="number" id="ordenadoMinimo" placeholder="Salário em Euros (Ordenado Mínimo)" />
+        <button id="calcularSalario">Calcular Total Salário</button>
+        <p>Total Salário: <span id="totalSalario">€ 0,00</span></p>
+
+        <h2>Conversão de Valores</h2>
+        <input type="number" id="valorRS" placeholder="Valor em R$" />
+        <input type="number" id="cotacaoWU" placeholder="Cotação Western Union" />
+        <input type="number" id="cotacaoWise" placeholder="Cotação Wise" />
+        <input type="number" id="cotacaoC6" placeholder="Cotação C6 Bank" />
+        <button id="calcularConversao">Calcular Conversão</button>
+        
+        <h3>Resultados:</h3>
+        <p>Western Union: <span id="resultadoWU">€ 0,00</span></p>
+        <p>Wise: <span id="resultadoWise">€ 0,00</span></p>
+        <p>C6 Bank: <span id="resultadoC6">€ 0,00</span></p>
+        <p id="melhorOpcao"></p>
+        <p id="diferencaValor"></p>
+    </div>
+
+    <script>
+        // Função para carregar dados do localStorage
+        function loadData() {
+            document.getElementById('meses').value = localStorage.getItem('meses') || '';
+            document.getElementById('pessoas').value = localStorage.getItem('pessoas') || '';
+            document.getElementById('ordenadoMinimo').value = localStorage.getItem('ordenadoMinimo') || '';
+            document.getElementById('valorRS').value = localStorage.getItem('valorRS') || '';
+            document.getElementById('cotacaoWU').value = localStorage.getItem('cotacaoWU') || '';
+            document.getElementById('cotacaoWise').value = localStorage.getItem('cotacaoWise') || '';
+            document.getElementById('cotacaoC6').value = localStorage.getItem('cotacaoC6') || '';
+        }
+
+        // Função para salvar dados no localStorage
+        function saveData() {
+            localStorage.setItem('meses', document.getElementById('meses').value);
+            localStorage.setItem('pessoas', document.getElementById('pessoas').value);
+            localStorage.setItem('ordenadoMinimo', document.getElementById('ordenadoMinimo').value);
+            localStorage.setItem('valorRS', document.getElementById('valorRS').value);
+            localStorage.setItem('cotacaoWU', document.getElementById('cotacaoWU').value);
+            localStorage.setItem('cotacaoWise', document.getElementById('cotacaoWise').value);
+            localStorage.setItem('cotacaoC6', document.getElementById('cotacaoC6').value);
+        }
+
+        // Função para formatar números com separador de milhar
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Função para calcular o total do salário
+        function calcularSalarioTotal() {
+            var meses = parseInt(document.getElementById('meses').value);
+            var pessoas = parseInt(document.getElementById('pessoas').value);
+            var ordenadoMinimo = parseFloat(document.getElementById('ordenadoMinimo').value);
+            var totalSalario = 0;
+
+            if (!isNaN(meses) && !isNaN(pessoas) && !isNaN(ordenadoMinimo)) {
+                totalSalario = meses * pessoas * ordenadoMinimo;
+                document.getElementById('totalSalario').textContent = '€ ' + formatNumber(totalSalario.toFixed(2));
+            } else {
+                document.getElementById('totalSalario').textContent = '€ 0,00';
+            }
+            saveData(); // Salva os dados após calcular
+        }
+
+        // Função para calcular a conversão
+        function calcularConversao() {
+            var valorRS = parseFloat(document.getElementById('valorRS').value);
+            var cotacaoWU = parseFloat(document.getElementById('cotacaoWU').value);
+            var cotacaoWise = parseFloat(document.getElementById('cotacaoWise').value);
+            var cotacaoC6 = parseFloat(document.getElementById('cotacaoC6').value);
+            var resultadoWU = 0;
+            var resultadoWise = 0;
+            var resultadoC6 = 0;
+
+            // Cálculos para cada serviço
+            if (!isNaN(valorRS) && !isNaN(cotacaoWU)) {
+                resultadoWU = valorRS / cotacaoWU;
+                document.getElementById('resultadoWU').innerHTML = '€ ' + formatNumber(resultadoWU.toFixed(2));
+            } else {
+                document.getElementById('resultadoWU').innerHTML = '€ 0,00';
+            }
+
+            if (!isNaN(valorRS) && !isNaN(cotacaoWise)) {
+                resultadoWise = valorRS / cotacaoWise;
+                document.getElementById('resultadoWise').innerHTML = '€ ' + formatNumber(resultadoWise.toFixed(2));
+            } else {
+                document.getElementById('resultadoWise').innerHTML = '€ 0,00';
+            }
+
+            if (!isNaN(valorRS) && !isNaN(cotacaoC6)) {
+                resultadoC6 = valorRS / cotacaoC6;
+                document.getElementById('resultadoC6').innerHTML = '€ ' + formatNumber(resultadoC6.toFixed(2));
+            } else {
+                document.getElementById('resultadoC6').innerHTML = '€ 0,00';
+            }
+
+            // Análise de melhor opção
+            var resultados = [
+                { nome: 'Western Union', valor: resultadoWU, cotacao: cotacaoWU },
+                { nome: 'Wise', valor: resultadoWise, cotacao: cotacaoWise },
+                { nome: 'C6 Bank', valor: resultadoC6, cotacao: cotacaoC6 }
+            ];
+
+            resultados.sort(function(a, b) {
+                return b.valor - a.valor;
+            });
+
+            var melhorOpcao = resultados[0];
+            var segundaOpcao = resultados[1];
+            var diferenca = melhorOpcao.valor - segundaOpcao.valor;
+
+            // Mostra a melhor opção
+            document.getElementById('melhorOpcao').textContent = 'Você economizaria aproximadamente € ' + formatNumber(diferenca.toFixed(2)) + ' escolhendo ' + melhorOpcao.nome + '.';
+            saveData(); // Salva os dados após calcular
+        }
+
+        // Adicionando eventos de clique para os botões
+        document.getElementById('calcularSalario').addEventListener('click', calcularSalarioTotal);
+        document.getElementById('calcularConversao').addEventListener('click', calcularConversao);
+        
+        // Carregar os dados do localStorage ao carregar a página
+        loadData();
+    </script>
+</body>
+</html>
